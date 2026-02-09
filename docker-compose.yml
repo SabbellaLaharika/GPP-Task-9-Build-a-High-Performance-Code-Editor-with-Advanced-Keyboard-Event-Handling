@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules # Mount a volume for node_modules to avoid overwriting
+    environment:
+      - NODE_ENV=development
+    # The healthcheck ensures the development server is running before tests are executed.
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
