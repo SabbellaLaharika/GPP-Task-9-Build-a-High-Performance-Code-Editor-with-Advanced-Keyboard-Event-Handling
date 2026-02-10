@@ -1,16 +1,56 @@
-# React + Vite
+# High-Performance Code Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-based code editor built with React and Vite, featuring advanced keyboard event handling, Docker containerization, and a real-time event debugging dashboard.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Split View Interface**: Code editor and real-time event log dashboard.
+- **Advanced Keyboard Handling**:
+  - **Save**: `Ctrl+S` / `Cmd+S` (Custom action, prevents browser default).
+  - **Undo/Redo**: `Ctrl+Z` / `Cmd+Z` and `Ctrl+Shift+Z` / `Cmd+Shift+Z` with history stack.
+  - **Comment Toggle**: `Ctrl+/` / `Cmd+/` toggles line comments.
+  - **Chorded Shortcuts**: `Ctrl+K` followed by `Ctrl+C` triggers a special action.
+  - **Indentation**: `Tab` (2 spaces), `Shift+Tab` (outdent), and auto-indent on `Enter`.
+- **Performance Optimizations**:
+  - Debounced syntax highlighting logic (simulated).
+  - Efficient event logging with history limits.
+- **Dockerized**: specific `Dockerfile` and `docker-compose.yml` for consistent environments.
 
-## React Compiler
+## Setup Instructions
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Docker and Docker Compose installed.
+- (Optional) Node.js 18+ for local development without Docker.
 
-## Expanding the ESLint configuration
+### Running with Docker (Recommended)
+1. **Build and Start**:
+   ```bash
+   docker-compose up -d --build
+   ```
+2. **Access the Application**:
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+3. **Verify Health**:
+   The container includes a healthcheck that curls localhost:3000.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Running Locally
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start development server:
+   ```bash
+   npm run dev
+   ```
+
+## Design Decisions
+
+- **State Management**: Implemented a custom hook `useEditorState` to manage content and the undo/redo stack. This provides a clean separation of concerns from the UI components.
+- **Event Handling**: Centralized `keydown` listener on the textarea to intercept shortcuts before browser defaults. This ensures consistent behavior across platforms (Mac/Windows).
+- **Debouncing**: Used a custom debounce utility for the "expensive" syntax highlighting operation to prevent performance degradation during rapid typing.
+- **CSS Architecture**: Used CSS variables for theming to allow easy switching between light/dark modes in the future, with a focus on a "dark mode first" aesthetic similar to VS Code.
+
+## Verification
+
+The application exposes internal state for automated testing:
+- `window.getEditorState()`: Returns `{ content, historySize }`.
+- `window.getHighlightCallCount()`: Returns the number of times the syntax highlighter ran.
