@@ -18,8 +18,15 @@ const Editor = ({ logEvent }) => {
   const { content, update, undo, redo } = useEditorState('// Welcome to the High-Performance Code Editor\n// Start typing...');
   const [chordState, setChordState] = useState({ active: false, timestamp: 0 });
   const textareaRef = useRef(null);
+  const lineNumbersRef = useRef(null);
 
   const lineCount = content.split('\n').length;
+
+  const handleScroll = () => {
+    if (textareaRef.current && lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  };
 
   // Simulate expensive syntax highlighting
   const performHighlight = () => {
@@ -208,7 +215,7 @@ const Editor = ({ logEvent }) => {
       className="editor-container"
       data-test-id="editor-container"
     >
-      <div className="line-numbers">
+      <div className="line-numbers" ref={lineNumbersRef}>
         {Array.from({ length: lineCount }, (_, i) => (
           <div key={i + 1} className="line-number">
             {i + 1}
@@ -224,6 +231,7 @@ const Editor = ({ logEvent }) => {
         onKeyDown={handleKeyDown}
         onKeyUp={handleEvent}
         onInput={handleEvent} // React's onInput fires on input
+        onScroll={handleScroll}
         onCompositionStart={handleEvent}
         onCompositionUpdate={handleEvent}
         onCompositionEnd={handleEvent}
