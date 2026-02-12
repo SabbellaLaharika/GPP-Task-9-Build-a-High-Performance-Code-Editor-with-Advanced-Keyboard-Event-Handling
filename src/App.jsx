@@ -1,9 +1,21 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Editor from './components/Editor';
 import Dashboard from './components/Dashboard';
 
 function App() {
   const [logs, setLogs] = useState([]);
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const newTheme = prev === 'dark' ? 'light' : 'dark';
+      return newTheme;
+    });
+  };
 
   const logEvent = useCallback((eventData) => {
     setLogs((prevLogs) => [
@@ -20,6 +32,9 @@ function App() {
       <header className="app-header">
         <h1>JS KeyLogger / Editor</h1>
         <div className="header-controls">
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+          </button>
           <span className="badge">v1.0.0</span>
         </div>
       </header>
