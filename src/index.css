@@ -202,6 +202,11 @@ body {
 }
 
 /* Green */
+.token-header {
+  color: #e06c75;
+}
+
+/* Red (like string/include) */
 .token-number {
   color: #d19a66;
 }
@@ -238,6 +243,10 @@ body {
 
 [data-theme="light"] .token-string {
   color: #50a14f;
+}
+
+[data-theme="light"] .token-header {
+  color: #a626a4;
 }
 
 [data-theme="light"] .token-number {

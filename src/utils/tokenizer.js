@@ -38,6 +38,7 @@ const KEYWORDS = new Set([
 const TOKEN_TYPES = [
     { type: 'comment', regex: /\/\/.*|\/\*[\s\S]*?\*\// },
     { type: 'string', regex: /(['"`])(?:\\.|(?!\1)[^\\\r\n])*\1/ },
+    { type: 'header', regex: /#include\s+<[^>]+>/ }, // C/C++ Headers
     { type: 'number', regex: /\b\d+(\.\d+)?\b/ },
     { type: 'keyword', regex: /\b[a-zA-Z_$][a-zA-Z0-9_$]*\b/ },
     { type: 'operator', regex: /[+\-*/%=&|<>!^~?:]+/ },
