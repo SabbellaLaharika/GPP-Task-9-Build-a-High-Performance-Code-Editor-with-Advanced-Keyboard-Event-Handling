@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import useEditorState from '../hooks/useEditorState';
+import { tokenize } from '../utils/tokenizer';
 
 // Debounce Utility (Simple implementation)
 const debounce = (func, wait) => {
@@ -19,12 +20,22 @@ const Editor = ({ logEvent }) => {
   const [chordState, setChordState] = useState({ active: false, timestamp: 0 });
   const textareaRef = useRef(null);
   const lineNumbersRef = useRef(null);
+  const startHighlightRef = useRef(null);
 
   const lineCount = content.split('\n').length;
 
   const handleScroll = () => {
-    if (textareaRef.current && lineNumbersRef.current) {
-      lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+    if (textareaRef.current) {
+      const scrollTop = textareaRef.current.scrollTop;
+      const scrollLeft = textareaRef.current.scrollLeft;
+
+      if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = scrollTop;
+      }
+      if (startHighlightRef.current) {
+        startHighlightRef.current.scrollTop = scrollTop;
+        startHighlightRef.current.scrollLeft = scrollLeft;
+      }
     }
   };
 
@@ -44,6 +55,16 @@ const Editor = ({ logEvent }) => {
   useEffect(() => {
     debouncedHighlight(content);
   }, [content, debouncedHighlight]);
+
+  // Real Syntax Highlighting
+  const highlightedContent = useMemo(() => {
+    const tokens = tokenize(content);
+    return tokens.map((token, index) => (
+      <span key={index} className={`token-${token.type}`}>
+        {token.value}
+      </span>
+    ));
+  }, [content]);
 
 
   // Event Handlers
@@ -222,24 +243,34 @@ const Editor = ({ logEvent }) => {
           </div>
         ))}
       </div>
-      <textarea
-        ref={textareaRef}
-        className="editor-input"
-        data-test-id="editor-input"
-        value={content}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleEvent}
-        onInput={handleEvent} // React's onInput fires on input
-        onScroll={handleScroll}
-        onCompositionStart={handleEvent}
-        onCompositionUpdate={handleEvent}
-        onCompositionEnd={handleEvent}
-        spellCheck="false"
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-      />
+      <div className="editor-wrapper" style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
+        <pre
+          ref={startHighlightRef}
+          className="editor-highlight"
+          aria-hidden="true"
+        >
+          {highlightedContent}
+          <br />
+        </pre>
+        <textarea
+          ref={textareaRef}
+          className="editor-input"
+          data-test-id="editor-input"
+          value={content}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onKeyUp={handleEvent}
+          onInput={handleEvent} // React's onInput fires on input
+          onScroll={handleScroll}
+          onCompositionStart={handleEvent}
+          onCompositionUpdate={handleEvent}
+          onCompositionEnd={handleEvent}
+          spellCheck="false"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+        />
+      </div>
     </div>
   );
 };
