@@ -30,7 +30,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>JS KeyLogger / Editor</h1>
+        <h1>KeyLogger / Code Editor</h1>
         <div className="header-controls">
           <button className="theme-toggle" onClick={toggleTheme}>
             {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
